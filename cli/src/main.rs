@@ -1,3 +1,5 @@
+mod cmds;
+
 use clap::{value_parser, Arg, ArgAction, Command};
 use clap_complete::{generate, Generator, Shell};
 
@@ -33,5 +35,33 @@ fn main() {
         let mut cmd = cli();
         eprintln!("Generating completion file for {generator}...");
         print_completions(generator, &mut cmd);
+    }
+
+    if let Some(commands) = matches.subcommand() {
+        match commands {
+            ("github", gh_commands) => {
+                if let Some(("pull-request", pr_commands)) = gh_commands.subcommand() {
+                    match pr_commands.subcommand() {
+                        Some(("create", create_cmd)) => {
+                            let target_branch = create_cmd
+                                .get_one::<String>("target_branch")
+                                .expect("Target branch is required");
+
+                            cmds::github::pr::GithubPrCreateCmd::new(target_branch).call();
+
+                            return;
+                        }
+                        _ => {
+                            println!("Invalid command under 'pull-request'");
+                            return;
+                        }
+                    }
+                }
+            }
+            _ => {
+                println!("Invalid subcommand");
+                return;
+            }
+        }
     }
 }
