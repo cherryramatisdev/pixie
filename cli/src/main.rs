@@ -1,5 +1,3 @@
-mod cmds;
-
 use clap::{value_parser, Arg, ArgAction, Command};
 use clap_complete::{generate, Generator, Shell};
 
