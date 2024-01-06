@@ -35,31 +35,18 @@ fn main() {
         print_completions(generator, &mut cmd);
     }
 
-    if let Some(commands) = matches.subcommand() {
-        match commands {
-            ("github", gh_commands) => {
-                if let Some(("pull-request", pr_commands)) = gh_commands.subcommand() {
-                    match pr_commands.subcommand() {
-                        Some(("create", create_cmd)) => {
-                            let target_branch = create_cmd
-                                .get_one::<String>("target_branch")
-                                .expect("Target branch is required");
+    return match matches.subcommand().unwrap() {
+        ("github", commands) => match commands.subcommand().unwrap() {
+            ("pull-request", pr_cmd) => match pr_cmd.subcommand().unwrap() {
+                ("create", create_cmd) => {
 
                             cmds::github::pr::GithubPrCreateCmd::new(target_branch).call();
 
-                            return;
-                        }
-                        _ => {
-                            println!("Invalid command under 'pull-request'");
-                            return;
-                        }
-                    }
                 }
-            }
-            _ => {
-                println!("Invalid subcommand");
-                return;
-            }
-        }
-    }
+                _ => Err(anyhow::anyhow!("Error while matching subcommand")),
+            },
+            _ => Err(anyhow::anyhow!("Error while matching subcommand")),
+        },
+        _ => Err(anyhow::anyhow!("Error while matching subcommand")),
+    };
 }
