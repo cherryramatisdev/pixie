@@ -26,7 +26,7 @@ fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut std::io::stdout())
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let matches = cli().get_matches();
 
     if let Some(generator) = matches.get_one::<Shell>("generator").copied() {
@@ -39,9 +39,19 @@ fn main() {
         ("github", commands) => match commands.subcommand().unwrap() {
             ("pull-request", pr_cmd) => match pr_cmd.subcommand().unwrap() {
                 ("create", create_cmd) => {
+                    let target_branch = create_cmd
+                        .get_one::<String>("target_branch")
+                        .expect("Target branch is required");
 
-                            cmds::github::pr::GithubPrCreateCmd::new(target_branch).call();
+                    let pr = gh::pr::Pr {
+                        target_branch: target_branch.to_string(),
+                        reviewers: vec![],
+                        is_draft: true,
+                    };
 
+                    pr.create()?.open();
+
+                    Ok(())
                 }
                 _ => Err(anyhow::anyhow!("Error while matching subcommand")),
             },
