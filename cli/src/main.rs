@@ -35,6 +35,8 @@ fn main() -> anyhow::Result<()> {
         print_completions(generator, &mut cmd);
     }
 
+    // TODO: I don't like how all the Err() are staggered up
+    // Probably the only actual usefulness of exceptions? (joking)
     return match matches.subcommand().unwrap() {
         ("github", commands) => match commands.subcommand().unwrap() {
             ("pull-request", pr_cmd) => match pr_cmd.subcommand().unwrap() {
@@ -49,7 +51,7 @@ fn main() -> anyhow::Result<()> {
                         is_draft: true,
                     };
 
-                    pr.create()?.open();
+                    pr.create()?.open()?;
 
                     Ok(())
                 }
