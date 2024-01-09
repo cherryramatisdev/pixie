@@ -6,12 +6,16 @@ fn cli() -> Command {
         .alias("pr")
         .subcommands([Command::new("create").arg(Arg::new("target_branch").required(true))]);
 
+    let gh_profile_commands = Command::new("profile")
+        .alias("p")
+        .subcommands([Command::new("switch").alias("s")]);
+
     let gh_commands = Command::new("github")
         .about("Github operations")
         .alias("gh")
-        .subcommands([gh_pr_commands]);
+        .subcommands([gh_pr_commands, gh_profile_commands]);
 
-    return Command::new("pixie")
+    Command::new("pixie")
         .bin_name("pixie")
         .subcommands([gh_commands])
         .arg(
@@ -19,7 +23,7 @@ fn cli() -> Command {
                 .long("generate")
                 .action(ArgAction::Set)
                 .value_parser(value_parser!(Shell)),
-        );
+        )
 }
 
 fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
@@ -52,6 +56,14 @@ fn main() -> anyhow::Result<()> {
                     };
 
                     pr.create()?.open()?;
+
+                    Ok(())
+                }
+                _ => Err(anyhow::anyhow!("Error while matching subcommand")),
+            },
+            ("profile", profile_cmd) => match profile_cmd.subcommand().unwrap() {
+                ("switch", _) => {
+                    gh::profile::switch()?;
 
                     Ok(())
                 }
