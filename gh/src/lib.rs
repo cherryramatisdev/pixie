@@ -29,9 +29,13 @@ pub mod pr {
             return Ok(self);
         }
 
-        pub fn open(self) -> Self {
-            eprintln!("OPEN");
-            return self;
+        pub fn open(self) -> Result<Self, std::io::Error> {
+            let mut cmd = Command::new("gh");
+            let cmd = cmd.args(&["pr", "view", "-w"]);
+
+            cmd.status()?;
+
+            return Ok(self);
         }
     }
 }
