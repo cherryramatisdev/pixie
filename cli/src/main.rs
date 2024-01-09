@@ -49,7 +49,7 @@ fn main() -> anyhow::Result<()> {
                         .get_one::<String>("target_branch")
                         .expect("Target branch is required");
 
-                    let pr = gh::pr::Pr {
+                    let pr = cherrygh::pr::Pr {
                         target_branch: target_branch.to_string(),
                         reviewers: vec![],
                         is_draft: true,
@@ -63,7 +63,7 @@ fn main() -> anyhow::Result<()> {
             },
             ("profile", profile_cmd) => match profile_cmd.subcommand().unwrap() {
                 ("switch", _) => {
-                    gh::profile::switch()?;
+                    cherrygh::profile::switch()?;
 
                     Ok(())
                 }

@@ -1,10 +1,12 @@
 [package]
-name = "cli"
+name = "pixiee"
+description = "A personal CLI to have it always"
+license = "MIT"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]                                     
 anyhow = "1.0.79"
+cherrygh = { version = "0.1.0", path = "../gh" }
 clap = { version = "4.4.11", features = ["cargo"] }
 clap_complete = "4.4.4"                            
-gh = { path = "../gh" }
